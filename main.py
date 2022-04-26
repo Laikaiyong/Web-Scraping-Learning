@@ -1,7 +1,9 @@
 from bs4 import BeautifulSoup
 import requests
 
-html_text = requests.get('https://www.analyticsvidhya.com/blog-archive/').text
+LINK = ""
+
+html_text = requests.get(LINK).text
 soup = BeautifulSoup(html_text, 'lxml')
 
 title_bar = soup.find_all("div", class_="list-card-content")
