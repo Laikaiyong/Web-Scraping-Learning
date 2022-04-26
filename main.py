@@ -1,14 +1,23 @@
 from bs4 import BeautifulSoup
+import requests
 
-with open('home.html', 'r') as html_file:
-    content = html_file.read()
+html_text = requests.get('https://www.analyticsvidhya.com/blog-archive/').text
+soup = BeautifulSoup(html_text, 'lxml')
 
-    soup = BeautifulSoup(content, 'lxml')
-    # print(soup.prettify())
+title_bar = soup.find_all("div", class_="list-card-content")
 
-    data_title = soup.find_all('dt')
-    small_titles = [
-        tag.p.text
-        for tag in data_title
-    ]
-    print(small_titles)
+with open('./result/articles.csv', 'w') as file_writer:
+    file_writer.write("title, link, author, created_time\n")
+    for title in title_bar:
+        title_extract = title.h4.text
+        file_writer.write(title_extract + ', ')
+
+        link_extract = title.find('a', recursive=False)['href']
+        file_writer.write(link_extract + ', ')
+
+        author = title.h6.find('a', recursive=False).text
+        file_writer.write(author + ',')
+
+        full_footer = title.h6.text.strip().split(',')
+        date_extract = full_footer[1] + full_footer[2]
+        file_writer.write(date_extract + '\n')
